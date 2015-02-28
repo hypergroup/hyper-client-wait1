@@ -1,0 +1,22 @@
+{
+  "name": "hyper-client-wait1",
+  "version": "0.1.0",
+  "description": "wait1 protocol support for hyper-path",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hypergroup/hyper-client-wait1.git"
+  },
+  "author": "Cameron Bytheway <bytheway.cameron@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hypergroup/hyper-client-wait1/issues"
+  },
+  "homepage": "https://github.com/hypergroup/hyper-client-wait1",
+  "dependencies": {
+    "wait1": "^0.1.0"
+  }
+}

@@ -38,7 +38,7 @@ Client.prototype.subscribe = function(href, cb) {
   }
   self.on(href, sub);
   return function() {
-    self.removeEventListener(href, sub);
+    self.removeListener(href, sub);
   };
 };
 

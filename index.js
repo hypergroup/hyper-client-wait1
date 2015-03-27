@@ -6,6 +6,7 @@ var Wait1 = require('wait1');
 var inherits = require('util').inherits;
 var Emitter = require('events').EventEmitter;
 var parse = require('url').parse;
+var qs = require('qs').stringify;
 
 module.exports = Client;
 
@@ -40,6 +41,16 @@ Client.prototype.subscribe = function(href, cb) {
   return function() {
     self.removeListener(href, sub);
   };
+};
+
+Client.prototype.format = function(method, action, values, cb) {
+  if (method === 'GET') {
+    // TODO merge the qs
+    cb(null, action + '?' + qs(values));
+  } else {
+    cb(null, action, values);
+  }
+  return this;
 };
 
 function get(url, cb) {

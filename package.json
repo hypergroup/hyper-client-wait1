@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/hypergroup/hyper-client-wait1",
   "dependencies": {
+    "qs": "^2.4.1",
     "wait1": "^0.1.0"
   }
 }

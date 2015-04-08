@@ -10,21 +10,23 @@ var qs = require('qs').stringify;
 
 module.exports = Client;
 
-function Client(API_URL, opts) {
+function Client(API_URL, token, opts) {
   var self = this;
-  if (!(self instanceof Client)) return new Client(API_URL, opts);
+  if (!(self instanceof Client)) return new Client(API_URL, token, opts);
 
   Emitter.call(self);
 
   self.root = get.bind(self, API_URL);
   self.get = get.bind(self);
   Wait1.onpush(onpush.bind(self));
+  self.token = token;
 }
 inherits(Client, Emitter);
 
 Client.prototype.submit = function(method, action, values, cb) {
   var conf = parse(action);
   conf.method = method;
+  if (this.token) conf.auth = this.token + ':';
   var req = Wait1.request(conf, function(res) {
     cb(null, res.body);
   });
@@ -56,7 +58,9 @@ Client.prototype.format = function(method, action, values, cb) {
 function get(url, cb) {
   var self = this;
   var sub = self.subscribe(url, cb);
-  Wait1.request(url, function(res) {
+  var conf = parse(url);
+  if (self.token) conf.auth = self.token + ':';
+  Wait1.request(conf, function(res) {
     self.emit(url, null, res.body, null, null, false);
   }).end();
   return sub;

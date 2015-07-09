@@ -24,14 +24,17 @@ function Client(API_URL, token, opts) {
 inherits(Client, Emitter);
 
 Client.prototype.submit = function(method, action, values, cb) {
-  var conf = parse(action);
-  conf.method = method;
-  if (this.token) conf.auth = this.token + ':';
-  var req = Wait1.request(conf, function(res) {
-    cb(null, res.body);
+  var self = this;
+  self.format(method, action, values, function(err, action, values) {
+    var conf = parse(action);
+    conf.method = method;
+    if (self.token) conf.auth = self.token + ':';
+    var req = Wait1.request(conf, function(res) {
+      cb(null, res.body);
+    });
+    req.write(values);
+    req.end();
   });
-  req.write(values);
-  req.end();
 };
 
 Client.prototype.subscribe = function(href, cb) {

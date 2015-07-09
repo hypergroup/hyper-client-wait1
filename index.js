@@ -47,7 +47,7 @@ Client.prototype.subscribe = function(href, cb) {
 
 Client.prototype.format = function(method, action, values, cb) {
   if (method === 'GET') {
-    // TODO merge the qs
+    action = action.split('?')[0];
     cb(null, action + '?' + qs(values));
   } else {
     cb(null, action, values);

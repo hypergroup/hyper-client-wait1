@@ -70,5 +70,7 @@ function get(url, cb) {
 }
 
 function onpush(status, headers, body) {
-  this.emit(body.href, null, body, null, null, false);
+  var href = (body || {}).href || (headers || {})['content-location'] || (headers || {})['location'];
+  if (Array.isArray(href)) href = href[0];
+  if (href) this.emit(href, null, body, null, null, false);
 }

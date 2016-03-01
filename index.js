@@ -8,7 +8,8 @@ var Emitter = require('events').EventEmitter;
 var parse = require('url').parse;
 var qs = require('qs').stringify;
 
-module.exports = Client;
+exports = module.exports = Client;
+exports['default'] = exports;
 
 function Client(API_URL, token, opts) {
   var self = this;

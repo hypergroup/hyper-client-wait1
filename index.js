@@ -59,19 +59,36 @@ Client.prototype.format = function(method, action, values, cb) {
   return this;
 };
 
+var pushCache = Object.create(null);
+
 function get(url, cb) {
   var self = this;
   var sub = self.subscribe(url, cb);
   var conf = parse(url);
   if (self.token) conf.auth = self.token + ':';
-  Wait1.request(conf, function(res) {
-    self.emit(url, null, res.body, null, null, false);
-  }).end();
+
+  if (pushCache[url]) {
+    cb(null, pushCache[url], null, null, false);
+  } else {
+    Wait1.request(conf, function(res) {
+      self.emit(url, null, res.body, null, null, false);
+    }).end();
+  }
+
   return sub;
 }
 
 function onpush(status, headers, body) {
   var href = (body || {}).href || (headers || {})['content-location'] || (headers || {})['location'];
   if (Array.isArray(href)) href = href[0];
-  if (href) this.emit(href, null, body, null, null, false);
+  if (!href) return;
+
+  this.emit(href, null, body, null, null, false);
+
+  // store pushed responses in a temporary cache so redirects don't
+  // hit the server twice
+  pushCache[href] = body;
+  setTimeout(function() {
+    delete pushCache[href];
+  }, 100);
 }

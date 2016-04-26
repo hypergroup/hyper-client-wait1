@@ -19,6 +19,7 @@ function Client(API_URL, token, opts) {
 
   self.root = get.bind(self, API_URL);
   self.get = get.bind(self);
+  self.set = set.bind(self, API_URL);
   Wait1.onpush(onpush.bind(self));
   self.token = token;
 }
@@ -76,6 +77,16 @@ function get(url, cb) {
   }
 
   return sub;
+}
+
+function set(url, headers) {
+  var self = this;
+  var conf = parse(url);
+  if (self.token) conf.auth = self.token + ':';
+
+  Wait1.set(conf, headers);
+
+  return self;
 }
 
 function onpush(status, headers, body) {

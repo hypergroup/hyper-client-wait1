@@ -1,6 +1,6 @@
 {
   "name": "hyper-client-wait1",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "wait1 protocol support for hyper-path",
   "main": "index.js",
   "scripts": {

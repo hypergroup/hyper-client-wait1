@@ -41,6 +41,7 @@ Client.prototype.submit = function(method, action, values, cb) {
 
 Client.prototype.subscribe = function(href, cb) {
   var self = this;
+  href = normalizeHref(href);
   function sub() {
     cb.apply(self, arguments);
   }
@@ -64,8 +65,9 @@ var pushCache = Object.create(null);
 
 function get(url, cb) {
   var self = this;
-  var sub = self.subscribe(url, cb);
   var conf = parse(url);
+  url = normalizeHref(url);
+  var sub = self.subscribe(url, cb);
   if (self.token) conf.auth = self.token + ':';
 
   if (pushCache[url]) {
@@ -94,6 +96,8 @@ function onpush(status, headers, body) {
   if (Array.isArray(href)) href = href[0];
   if (!href) return;
 
+  href = normalizeHref(href);
+
   this.emit(href, null, body, null, null, false);
 
   // store pushed responses in a temporary cache so redirects don't
@@ -102,4 +106,8 @@ function onpush(status, headers, body) {
   setTimeout(function() {
     delete pushCache[href];
   }, 100);
+}
+
+function normalizeHref(href) {
+  return (href || '').replace(/^[a-z]+\:\/\//, '//');
 }

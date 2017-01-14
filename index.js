@@ -15,6 +15,12 @@ function Client(API_URL, token, opts) {
   var self = this;
   if (!(self instanceof Client)) return new Client(API_URL, token, opts);
 
+  if (opts.basePath) {
+    API_URL = parse(API_URL);
+    self.wspath = API_URL.wspath = API_URL.pathname;
+    API_URL.pathname = API_URL.path = opts.basePath;
+  }
+
   Emitter.call(self);
 
   self.root = get.bind(self, API_URL);
@@ -30,7 +36,7 @@ Client.prototype.submit = function(method, action, values, cb) {
   self.format(method, action, values, function(err, action, values) {
     var conf = parse(action);
     conf.method = method;
-    if (self.token) conf.auth = self.token + ':';
+    conf = self._formatConf(conf);
     var req = Wait1.request(conf, function(res) {
       cb(null, res.body);
     });
@@ -61,6 +67,16 @@ Client.prototype.format = function(method, action, values, cb) {
   return this;
 };
 
+Client.prototype._formatConf = function(conf) {
+  var self = this;
+  if (self.token) conf.auth = self.token + ':';
+  if (self.wspath) {
+    conf.pathname = conf.pathname.slice(self.wspath.length);
+    conf.wspath = self.wspath;
+  }
+  return conf;
+}
+
 var pushCache = Object.create(null);
 
 function get(url, cb) {
@@ -68,7 +84,7 @@ function get(url, cb) {
   var conf = parse(url);
   url = normalizeHref(url);
   var sub = self.subscribe(url, cb);
-  if (self.token) conf.auth = self.token + ':';
+  conf = self._formatConf(conf);
 
   if (pushCache[url]) {
     cb(null, pushCache[url], null, null, false);
@@ -109,5 +125,5 @@ function onpush(status, headers, body) {
 }
 
 function normalizeHref(href) {
-  return (href || '').replace(/^[a-z]+\:\/\//, '//');
+  return (href.href || href || '').replace(/^[a-z]+\:\/\//, '//');
 }

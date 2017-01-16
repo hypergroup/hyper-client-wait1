@@ -15,6 +15,7 @@ function Client(API_URL, token, opts) {
   var self = this;
   if (!(self instanceof Client)) return new Client(API_URL, token, opts);
 
+  opts = opts || {};
   if (opts.basePath) {
     API_URL = parse(API_URL);
     self.wspath = API_URL.wspath = API_URL.pathname;
